@@ -1,2 +1,36 @@
 @import 'materialize';
 @import 'ember-cli-materialize';
+
+@import 'navbar';
+@import 'sidebar';
+
+html, body {
+  @extend .cs-fill-container;
+  margin: 0px;
+  overflow: hidden;
+}
+
+a {
+  outline : none;
+}
+
+.cs-fill-container {
+  width: 100%;
+  height: 100%;
+}
+
+body > .ember-view, #cs-main-contents {
+  height: 100%;
+}
+
+#cs-main-contents {
+  padding-left: 0;
+}
+
+@media only screen and (min-width: 993px) {
+  #cs-main-contents {
+    padding-left: 240px;
+  }
+}
+
+

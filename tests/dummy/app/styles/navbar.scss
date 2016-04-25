@@ -1,0 +1,32 @@
+nav {
+  z-index: 1000;
+}
+
+nav svg {
+  width: auto;
+  height: 100%;
+  fill: #fff;
+  padding: 30% 0;
+}
+
+nav .brand-logo {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+nav #cs-github-logo {
+  float: right;
+  position: relative;
+  height: 56px;
+  font-size: 2.7rem;
+  line-height: 56px;
+  z-index: 1;
+}
+
+@media only screen and (min-width: 993px) {
+  nav #cs-github-logo {
+    height: 64px;
+    line-height: 64px;
+  }
+}
+

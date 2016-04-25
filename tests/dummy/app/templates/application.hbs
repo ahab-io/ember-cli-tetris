@@ -1,6 +1,11 @@
-<h2 id="title">Welcome to Ember</h2>
+{{outlet "navbar"}}
+{{outlet "sidebar"}}
 
-{{outlet}}
+<div id="cs-main-contents">
+
+  {{outlet}}
+
+</div>
 
 {{!-- ember-cli-materialize modal container --}}
 {{md-modal-container}}
