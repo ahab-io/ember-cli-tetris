@@ -1,6 +1,6 @@
-import Ember from 'ember';
 import layout from '../templates/components/tetris-player';
+import TetrisComponent from './tetris-component';
 
-export default Ember.Component.extend({
+export default TetrisComponent.extend({
   layout
 });
