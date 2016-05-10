@@ -1,1 +1,9 @@
-{{yield}}
+{{#if child.id}}
+  {{#unless makingGrandChild}}
+    {{#each grandChildren as |grandChild|}}
+      {{#if grandChild.id}}
+        {{tetris-block parent=child isTopmostComponent=false model=grandChild}}
+      {{/if}}
+    {{/each}}
+  {{/unless}}
+{{/if}}

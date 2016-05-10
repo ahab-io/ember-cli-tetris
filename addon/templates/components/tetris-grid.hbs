@@ -1,1 +1,31 @@
-{{yield}}
+<div class="cs-tetris-grid__overlay__container">
+  <div class="cs-tetris-grid__overlay__message">
+    <span class="js-tetris-grid__overlay">Game Over</span>
+  </div>
+</div>
+
+{{#if child.id}}
+  {{#unless makingGrandChild}}
+    {{#each grandChildren as |grandChild|}}
+      {{#if grandChild.id}}
+        {{tetris-piece parent=child isTopmostComponent=false model=grandChild}}
+      {{/if}}
+    {{/each}}
+  {{/unless}}
+{{/if}}
+
+{{#each (reverse (range numRows (add numRows superRows))) as |i|}}
+  <div class="cs-tetris-grid__row cs-tetris-grid__row__{{i}} {{unless showSpawnRows 'hidden' 'grey lighten-4'}}">
+    {{#each (range 0 numCols) as |j|}}
+      <div class="cs-tetris-grid__col cs-tetris-grid__col__{{j}}"></div>
+    {{/each}}
+  </div>
+{{/each}}
+
+{{#each (reverse (range 0 numRows)) as |i|}}
+  <div class="cs-tetris-grid__row cs-tetris-grid__row__{{i}}">
+    {{#each (range 0 numCols) as |j|}}
+      <div class="cs-tetris-grid__col cs-tetris-grid__col__{{j}}"></div>
+    {{/each}}
+  </div>
+{{/each}}

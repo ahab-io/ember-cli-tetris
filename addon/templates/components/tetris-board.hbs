@@ -1,1 +1,38 @@
-{{yield}}
+{{#if child.id}}
+  {{#unless makingGrandChild}}
+    {{#if onlyGrandChild.id}}
+      {{tetris-grid parent=child isTopmostComponent=false model=onlyGrandChild}}
+    {{/if}}
+  {{/unless}}
+{{/if}}
+
+<div class='cs-tetris-board__sidebar cs-tetris-board__sidebar__left' style="height: 100%; float: left;">
+
+  level: {{ level }}
+
+  <br>
+
+  score: {{ score }}
+
+  <br>
+
+  lines: {{ lines }}
+
+</div>
+
+<div class='cs-tetris-board__sidebar cs-tetris-board__sidebar__right' style="height: 100%; float: right;">
+
+  <button class='btn-floating waves-effect waves-light teal' {{action "togglePlay"}}>
+    <i class="material-icons">
+      {{if isLive "pause" "play_arrow"}}
+    </i>
+  </button>
+
+  <button class='btn-floating waves-effect waves-light teal' {{action "toggleMusic"}}>
+    <i class="material-icons">
+      {{if isPlayingMusic "volume_off" "music_note"}}
+    </i>
+  </button>
+
+</div>
+
