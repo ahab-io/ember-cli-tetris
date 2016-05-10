@@ -7,13 +7,8 @@
   @extend .cs-fill-container;
   line-height: 0;
   text-align: center;
-  overflow: visible;
+  overflow: visible !important;
   transform: translateY(50%);
-}
-
-.cs-tetris-grid__overlay {
-  @extend .cs-fill-container;
-  @extend .z-depth-3;
 }
 
 .cs-tetris-grid__overlay__container {
