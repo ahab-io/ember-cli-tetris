@@ -1,0 +1,33 @@
+.cs-tetris-grid__overlay__container {
+  @extend .cs-fill-container;
+  position: absolute;
+}
+
+.cs-tetris-grid__overlay__message {
+  @extend .cs-fill-container;
+  line-height: 0;
+  text-align: center;
+  overflow: visible;
+  transform: translateY(50%);
+}
+
+.cs-tetris-grid__overlay {
+  @extend .cs-fill-container;
+  @extend .z-depth-3;
+}
+
+.cs-tetris-grid__overlay__container {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+  -moz-transition: opacity 0.5s ease-in;
+  -webkit-transition: opacity 0.5s ease-in;
+  -o-transition: opacity 0.5s ease-in;
+}
+
+.cs-tetris-game-over > .cs-tetris-grid__overlay__container {
+  opacity: 1;
+}
+
+.cs-tetris-game-over > div:not(.cs-tetris-grid__overlay__container) {
+  opacity: 0.3;
+}

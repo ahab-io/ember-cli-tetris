@@ -1,0 +1,7 @@
+.cs-tetris-grid {
+  @extend .z-depth-2;
+}
+
+.cs-tetris-grid__block {
+  @extend .z-depth-1;
+}

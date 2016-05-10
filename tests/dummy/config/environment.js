@@ -1,6 +1,7 @@
 /* jshint node: true */
 
 module.exports = function(environment) {
+
   var ENV = {
     modulePrefix: 'dummy',
     environment: environment,
@@ -19,6 +20,12 @@ module.exports = function(environment) {
     },
     sassOptions: {
       includePaths: ['bower_components/materialize/sass']
+    },
+    resizeServiceDefaults: {
+      // debounceTimeout    : 100,
+      heightSensitive    : true,
+      // widthSensitive     : true,
+      // injectionFactories : [ 'view', 'component']
     }
   };
 
@@ -45,8 +52,13 @@ module.exports = function(environment) {
   if (environment === 'production') {
     ENV.locationType = 'hash';
     ENV.baseURL = '/ember-cli-tetris/';
-
   }
+
+  // ember-pouch keys
+  ENV.emberPouch = {
+    localDb: 'test',
+    remoteDB: 'http://localhost:5984/ember-cli-tetris'
+  };
 
   return ENV;
 };

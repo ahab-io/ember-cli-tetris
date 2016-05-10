@@ -5,7 +5,7 @@ export default Ember.Route.extend({
   activate: function() {
     Ember.run.scheduleOnce('afterRender', this, function() {
       Ember.$('.button-collapse').sideNav();
-    })
+    });
   },
 
   actions: {

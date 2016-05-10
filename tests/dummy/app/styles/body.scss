@@ -1,0 +1,22 @@
+#cs-main-contents {
+  @extend .cs-fill-container;
+  position: absolute;
+  top: 0;
+  padding-left: 0;
+}
+
+@media only screen and (min-width: 993px) {
+  #cs-main-contents {
+    padding-left: 240px;
+  }
+}
+
+#cs-main-contents {
+  padding-top: 56px;
+}
+
+@media only screen and (min-width: 600px) {
+  #cs-main-contents {
+    padding-top: 64px;
+  }
+}

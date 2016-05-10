@@ -1,13 +1,17 @@
+$roboto-font-path: "../assets/";
+
 @import 'materialize';
 @import 'ember-cli-materialize';
 
+@import 'body';
+@import 'grid';
 @import 'navbar';
 @import 'sidebar';
+@import 'overlay';
 
-html, body {
+html, body, body > .ember-view {
   @extend .cs-fill-container;
   margin: 0px;
-  overflow: hidden;
 }
 
 a {
@@ -17,20 +21,9 @@ a {
 .cs-fill-container {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
-body > .ember-view, #cs-main-contents {
-  height: 100%;
+.hidden {
+  display: none;
 }
-
-#cs-main-contents {
-  padding-left: 0;
-}
-
-@media only screen and (min-width: 993px) {
-  #cs-main-contents {
-    padding-left: 240px;
-  }
-}
-
-
