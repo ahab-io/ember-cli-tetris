@@ -54,10 +54,16 @@ module.exports = function(environment) {
     ENV.baseURL = '/ember-cli-tetris/';
   }
 
-  // ember-pouch keys
-  ENV.emberPouch = {
-    localDb: 'test',
-    remoteDB: 'http://localhost:5984/ember-cli-tetris'
+  ENV.emberPouch = { localDb: 'local_pouch' };
+
+  if (environment === 'development') {
+    ENV.emberPouch.remoteDb = 'http://localhost:5984/ember-cli-tetris';
+  } else {
+    ENV.emberPouch.remoteDb = 'https://djsegal.cloudant.com/ember-cli-tetris';
+  }
+
+  ENV.contentSecurityPolicy = {
+    "connect-src": "'self' " + ENV.emberPouch.remoteDb
   };
 
   return ENV;
