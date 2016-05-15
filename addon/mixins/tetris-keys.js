@@ -1,77 +1,35 @@
 import Ember from 'ember';
+import TetrisActionsMixin from './tetris-actions';
 import { EKMixin, keyDown } from 'ember-keyboard';
 
-export default Ember.Mixin.create(EKMixin, {
-
-  tetrisScorer: Ember.inject.service(),
+export default Ember.Mixin.create(TetrisActionsMixin, EKMixin, {
 
   activateKeyboard: Ember.on('init', function() {
     this.set('keyboardActivated', true);
   }),
 
-  slideLeft: Ember.on(keyDown('ArrowLeft'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) { return; }
-
-    this.callLockClockResetFunction(function() {
-      curPiece.slide(-1);
-    });
+  arrowLeft: Ember.on(keyDown('ArrowLeft'), function() {
+    this.slideLeft();
   }),
 
-  softDrop: Ember.on(keyDown('ArrowDown'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) { return; }
-
-    var didDrop = curPiece.drop();
-    if ( !didDrop ) { return; }
-
-    this.get('tetrisScorer').trigger('softDrop');
+  arrowDown: Ember.on(keyDown('ArrowDown'), function() {
+    this.softDrop();
   }),
 
-  slideRight: Ember.on(keyDown('ArrowRight'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) { return; }
-
-    this.callLockClockResetFunction(function() {
-      curPiece.slide(+1);
-    });
+  arrowRight: Ember.on(keyDown('ArrowRight'), function() {
+    this.slideRight();
   }),
 
-  hardDrop: Ember.on(keyDown('ArrowUp'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) {
-      this.notifyPropertyChange('curPiece');
-      return;
-    }
-
-    var atBottom = false,
-        dropHeight = 0;
-    while ( !atBottom ) {
-      atBottom = !curPiece.drop();
-      if ( atBottom ) { continue; }
-      dropHeight++;
-    }
-    this.get('tetrisScorer').trigger('hardDrop', dropHeight);
-
-    this.lockPiece();
+  arrowUp: Ember.on(keyDown('ArrowUp'), function() {
+    this.hardDrop();
   }),
 
-  rotateClockwise: Ember.on(keyDown('e'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) { return; }
-
-    this.callLockClockResetFunction(function() {
-      curPiece.rotate(+1);
-    });
+  strafeLeft: Ember.on(keyDown('e'), function() {
+    this.rotateClockwise();
   }),
 
-  rotateCounterClockwise: Ember.on(keyDown('q'), function() {
-    var curPiece = this.get('curPiece');
-    if ( !curPiece ) { return; }
-
-    this.callLockClockResetFunction(function() {
-      curPiece.rotate(-1);
-    });
+  strafeRight: Ember.on(keyDown('q'), function() {
+    this.rotateCounterClockwise();
   }),
 
 });

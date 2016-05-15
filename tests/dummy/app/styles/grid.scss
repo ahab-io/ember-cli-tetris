@@ -1,5 +1,10 @@
 .cs-tetris-grid {
   @extend .z-depth-2;
+  pointer-events: none;
+}
+
+.cs-tetris-grid .cs-tetris-grid__col {
+  pointer-events:auto;
 }
 
 .cs-tetris-grid__block {

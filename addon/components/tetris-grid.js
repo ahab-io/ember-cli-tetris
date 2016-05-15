@@ -4,10 +4,11 @@ import layout from '../templates/components/tetris-grid';
 import TetrisComponent from './tetris-component';
 import TetrisKeysMixin from '../mixins/tetris-keys';
 import TetrisRefsMixin from '../mixins/tetris-refs';
+import TetrisTapsMixin from '../mixins/tetris-taps';
 
 import Poller from '../custom-objects/poller';
 
-export default TetrisComponent.extend(TetrisKeysMixin, TetrisRefsMixin, {
+export default TetrisComponent.extend(TetrisKeysMixin, TetrisRefsMixin, TetrisTapsMixin, {
   layout,
 
   tetrisScorer: Ember.inject.service(),

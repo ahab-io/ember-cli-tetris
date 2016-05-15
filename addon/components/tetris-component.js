@@ -66,6 +66,7 @@ export default Ember.Component.extend({
     if ( model ) {
       if ( model.get('id') == null ) { throw 'Invalid tetris component child'; }
       console.log('child - ' + this.get('modelType'));
+      if ( this.get('modelType') == 'player') console.log('parent: ' + model.get('parent').get('id'))
       if ( !parent && !isTopmostComponent ) debugger
       if ( !isTopmostComponent && parent.get('id') !== model.get(this.getParentAssociationName(this.get('modelType'))).get('id') ) debugger
       // if ( this.get('modelType') == 'player') debugger
@@ -105,34 +106,48 @@ export default Ember.Component.extend({
     if ( this.isSimpleResource(childType) ) { console.log('bbbb');return grandChildren; }
     if ( this.get('makingGrandChild') ) { console.log('cccc');return; }
 
-    if ( grandChildren.isFulfilled ) {
       var madeGrandChild = this.get('madeGrandChild');
       if ( !madeGrandChild ) { this.set('needsGrandChild', true); }
       console.log('grandchild - ' + associationName);
+      console.log(grandChildren.get('length') || grandChildren.get('id'))
       return grandChildren;
-    }
 
-    var component = this;
-    grandChildren.then(function(grandChildrenResponse) {
-      console.log('notify 1 - ' + associationName)
-      // component.set('grandChildren', grandChildrenResponse)
-      // component.notifyPropertyChange('grandChildren');
-      component.notifyPropertyChange('model');
-    });
-    return;
+    // if ( grandChildren.isFulfilled ) {
+    //   var madeGrandChild = this.get('madeGrandChild');
+    //   if ( !madeGrandChild ) { this.set('needsGrandChild', true); }
+    //   console.log('grandchild - ' + associationName);
+    //   console.log(grandChildren.get('length'))
+    //   return grandChildren;
+    // }
+
+    // var component = this;
+    // grandChildren.then(function(grandChildrenResponse) {
+    //   if ( grandChildrenResponse )  console.log(grandChildrenResponse.get('length'))
+
+    //   console.log('notify 1 - ' + associationName)
+    //   component.notifyPropertyChange('model');
+    //   // component.notifyPropertyChange('child');
+    //   // component.notifyPropertyChange('grandChildren');
+    //   // component.set('grandChildren', grandChildrenResponse)
+    //   // component.notifyPropertyChange('grandChildren');
+    // });
+    // return grandChildren;
   }),
 
   handleGrandChild: Ember.observer('needsGrandChild', function() {
-    if ( !this.get('needsGrandChild') ) { return; }
+    console.log('hgc 0 - ' + this.get('modelType'));
+    if ( !this.get('needsGrandChild') ) { console.log('hgc 1'); return; }
 
     var child = this.get('child'),
         grandChildren = this.get('grandChildren');
 
-    if ( !child || !grandChildren ) { return; }
-    if ( child.get('id') == null ) { return; }
+    if ( !child || !grandChildren ) { console.log('hgc 2'); return; }
+    if ( child.get('id') == null ) { console.log('hgc 3'); return; }
 
-    if ( grandChildren.get('length') > 0 ) { return; }
-    if ( grandChildren.get('id') ) { return; }
+    if ( grandChildren.get('length') > 0 ) { console.log('hgc 4'); return; }
+    if ( grandChildren.get('id') ) { console.log('hgc 5'); return; }
+
+    console.log('creating 0 - ' + singularize(this.getChildAssociationName()))
 
     var component = this;
     if ( !child.save ) {
@@ -142,11 +157,11 @@ export default Ember.Component.extend({
         // } else {
 
         // };
-        // component.set('child', resolvedChild);
+        component.set('child', resolvedChild);
         console.log('notify 2 - ' + component.getChildAssociationName())
         // component.notifyPropertyChange('grandChildren');
         // component.notifyPropertyChange('child');
-        // component.notifyPropertyChange('needsGrandChild');
+        component.notifyPropertyChange('needsGrandChild');
       });
 
       return;
@@ -154,30 +169,64 @@ export default Ember.Component.extend({
 
     var associationName = this.getChildAssociationName(),
         grandChildModelType = singularize(associationName);
-    if ( this.isSimpleResource(grandChildModelType) ) { return; }
+    console.log('creating 1 - ' + grandChildModelType)
+    if ( this.isSimpleResource(grandChildModelType) ) { console.log('hgc 6'); return; }
 
-    if ( this.get('makingGrandChild') ) { return; }
+    if ( this.get('makingGrandChild') ) { console.log('hgc 7'); return; }
     this.set('makingGrandChild', true);
 
     var grandChildAttributes = {},
         modelType = this.get('modelType');
 
-    grandChildAttributes[modelType] = child;
-    var grandChild = this.get('store').createRecord(`tetris/${grandChildModelType}`, grandChildAttributes);
+    this.get('store').createRecord(`tetris/${grandChildModelType}`, grandChildAttributes).save().then(function(grandChild){
+      console.log('creating 2 - ' + grandChildModelType)
+      if ( component.isSingularResource(grandChildModelType) ) {
+        child.set(associationName, grandChild);
+      } else {
+        var grandChildren = child.get(associationName);
+        grandChildren.get('content').pushObject(grandChild);
+        grandChild.set(modelType, child)
+      }
 
-    console.log('*** ' + modelType + ": " + grandChild.get(modelType) + ' ***')
 
-    grandChild.set(modelType, child);
+      child.recursiveSave(function() {
+        // debugger
+        if ( component.get('isDestroying') ) { console.log('wuh wuh');return; }
+        if ( component.get('isDestroyed') ) { console.log('bum bum');return; }
 
-    if ( this.isSingularResource(grandChildModelType) ) {
-      child.set(associationName, grandChild);
-    } else {
-      child.get(associationName).then(function(grandChildren) {
-        grandChildren.pushObject(grandChild);
+        console.log('ok!')
+        component.notifyPropertyChange('grandChildren')
+        component.setProperties({
+          madeGrandChild: true,
+          makingGrandChild: false,
+          needsGrandChild: false
+        });
       });
-    }
 
-    console.log('creating - ' + grandChildModelType)
+    });
+
+    // grandChildAttributes[modelType] = child;
+    // var grandChild = this.get('store').createRecord(`tetris/${grandChildModelType}`, grandChildAttributes);
+
+    // console.log('*** ' + modelType + ": " + grandChild.get(modelType) + ' ***')
+
+    // grandChild.set(modelType, child);
+
+    // if ( this.isSingularResource(grandChildModelType) ) {
+    //   child.set(associationName, grandChild);
+    //   this.saveGrandChild(grandChild, component);
+    // } else {
+    //   // var grandChildren = child.get(associationName);
+    //   // grandChildren.pushObject(grandChild);
+    //   child.get(associationName).then(function(grandChildren) {
+    //     grandChildren.pushObject(grandChild);
+    //     component.saveGrandChild(grandChild, component);
+    //   });
+    // }
+  }),
+
+  saveGrandChild: function(grandChild, component) {
+    console.log('creating - ' + singularize(component.getChildAssociationName()))
     console.log('111')
     grandChild.save().then(function(grandChildResponse) {
       console.log('222 - ' + grandChildResponse)
@@ -192,11 +241,11 @@ export default Ember.Component.extend({
           needsGrandChild: false
         });
 
-        console.log('created - ' + grandChildModelType)
+        console.log('created - ' + singularize(component.getChildAssociationName()))
         // debugger
         console.log('notify 3')
         // component.notifyPropertyChange('child');
-        component.notifyPropertyChange('model');
+        // component.notifyPropertyChange('model');
       });
       // component.saveRelationships(0, function() {
       //   debugger
@@ -215,8 +264,7 @@ export default Ember.Component.extend({
       //   component.notifyPropertyChange('child');
       // });
     });
-
-  }),
+  },
 
   saveRelationships: function(depth, callback) {
     var modelType = this.get('modelType'),

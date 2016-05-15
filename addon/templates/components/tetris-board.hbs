@@ -1,9 +1,6 @@
-{{#if (and child.id child.save)}}
-why
+{{#if child.id}}
   {{#unless makingGrandChild}}
-  are
-    {{#if (and onlyGrandChild.id onlyGrandChild.save)}}
-    we
+    {{#if onlyGrandChild.id}}
       {{tetris-grid parent=child isTopmostComponent=false model=onlyGrandChild}}
     {{/if}}
   {{/unless}}

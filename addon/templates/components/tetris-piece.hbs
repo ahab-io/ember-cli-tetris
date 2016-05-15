@@ -1,7 +1,7 @@
-{{#if (and child.id child.save)}}
+{{#if child.id}}
   {{#unless makingGrandChild}}
     {{#each grandChildren as |grandChild|}}
-      {{#if (and grandChild.id grandChild.save)}}
+      {{#if grandChild.id}}
         {{tetris-block parent=child isTopmostComponent=false model=grandChild}}
       {{/if}}
     {{/each}}

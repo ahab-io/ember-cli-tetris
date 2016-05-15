@@ -6,6 +6,7 @@ import { shuffle } from 'ember-composable-helpers/helpers/shuffle';
 export default Ember.Mixin.create({
 
   tetrominoCatalog: Ember.inject.service(),
+  tetrisTrash: Ember.inject.service(),
 
   needsRefill: true,
 
@@ -35,6 +36,7 @@ export default Ember.Mixin.create({
 
   tetrominoTypes: Ember.computed.alias('tetrominoCatalog.keys'),
   tetrominoCount: Ember.computed.alias('tetrominoCatalog.count'),
+  trashingLines: Ember.computed.alias('tetrisTrash.trashingLines'),
 
   init: function() {
     this._super();
@@ -176,11 +178,12 @@ export default Ember.Mixin.create({
     this.set('needsRefill', false);
   })),
 
-  pieceRef: Ember.on('init', Ember.observer('allRefsIn', 'needsPiece', function() {
+  pieceRef: Ember.on('init', Ember.observer('allRefsIn', 'needsPiece', 'trashingLines', function() {
     if ( this.get('isBadRollCall') ) { return; }
 
     if ( !this.get('needsPiece') ) { return; }
     if ( !this.coordinateRefs('piece') ) { return; }
+    if ( this.get('trashingLines') ) { return; }
     if ( this.get('curPiece') || this.get('makingPiece') ) { return; }
 
     var upcomingPieces = this.get('upcomingPieces');

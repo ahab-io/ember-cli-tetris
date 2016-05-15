@@ -20,6 +20,7 @@ export default Model.extend({
         parent.then((parentResponse) => parentResponse.recursiveSave(callback))
       }
     } else {
+      console.log('??? - ' + this.get('players').get('length'))
       this.save().then(callback);
     }
   }

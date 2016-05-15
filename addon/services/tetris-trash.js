@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Service.extend(Ember.Evented, {
 
+  trashingLines: false,
+
   init() {
     this._super(...arguments);
 
@@ -9,6 +11,7 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   trashLines: function(blocks, pieces, component) {
+    this.set('trashingLines', true);
     this.trashBlocks(blocks, pieces, component);
   },
 
@@ -29,6 +32,7 @@ export default Ember.Service.extend(Ember.Evented, {
 
     pieces.forEach(function(piece) {
       if ( piece.get('blocks').get('length') <= 0 ) {
+        console.log('xxx')
         destroyedPieces.push(piece.destroyRecord());
       }
     });
@@ -39,7 +43,10 @@ export default Ember.Service.extend(Ember.Evented, {
   updateComponent: function(component) {
     // debugger
     // remove piece from grid pieces
-    component.saveRelationships(0);
+    console.log('ooo')
+    component.saveRelationships(0, function(){
+      component.set('trashingLines', false);
+    });
   }
 
   // trashBlocks: function(blocks, piece) {
