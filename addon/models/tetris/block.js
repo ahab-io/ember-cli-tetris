@@ -4,6 +4,7 @@ import TetrisModel from '../tetris-model';
 
 export default TetrisModel.extend({
 
+  parent: Ember.computed.alias('piece'),
   piece: DS.belongsTo('tetris/piece'),
 
   x: DS.attr('number'),

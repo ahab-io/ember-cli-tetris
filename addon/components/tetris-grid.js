@@ -117,11 +117,11 @@ export default TetrisComponent.extend(TetrisKeysMixin, TetrisRefsMixin, {
   },
 
   clearLines(clearedRows, callback) {
-    var component = this;
+    var destroyedBlocks = [],
+        partialPieces = [],
+        component = this;
 
     this.get('pieces').forEach(function(piece) {
-
-      var destroyedBlocks = [];
       piece.get('blocks').forEach(function(block) {
         var blockRow = block.get('i'),
             clearedRows = this;
@@ -133,12 +133,11 @@ export default TetrisComponent.extend(TetrisKeysMixin, TetrisRefsMixin, {
 
       if ( destroyedBlocks.length > 0 ) {
         piece.get('blocks').removeObjects(destroyedBlocks);
-
-        component.get('tetrisTrash').trigger('trashBlocks', destroyedBlocks, piece);
+        partialPieces.push(piece);
       }
-
     });
 
+    component.get('tetrisTrash').trigger('trashLines', destroyedBlocks, partialPieces, component);
     this.setFillStays(clearedRows, callback);
   },
 

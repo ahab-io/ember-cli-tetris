@@ -3,6 +3,7 @@
 import TetrisModel from '../tetris-model';
 
 export default TetrisModel.extend({
+  parent: Ember.computed.alias('grid'),
   grid: DS.belongsTo('tetris/grid'),
   blocks: DS.hasMany('tetris/block'),
   color: DS.attr('string'),

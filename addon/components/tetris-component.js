@@ -57,16 +57,26 @@ export default Ember.Component.extend({
     });
   },
 
-  child: Ember.computed('model', 'parent', 'modelType', 'isTopmostComponent', function() {
+  child: Ember.computed('model', 'model.rev', 'parent', 'parent.rev', 'modelType', 'isTopmostComponent', function() {
     var model = this.get('model');
-    if ( model && model.get('id') == null ) { throw 'Invalid tetris component child'; }
-    if ( model ) { return model; }
+
+    var isTopmostComponent = this.get('isTopmostComponent'),
+        parent = this.get('parent');
+
+    if ( model ) {
+      if ( model.get('id') == null ) { throw 'Invalid tetris component child'; }
+      console.log('child - ' + this.get('modelType'));
+      if ( !parent && !isTopmostComponent ) debugger
+      if ( !isTopmostComponent && parent.get('id') !== model.get(this.getParentAssociationName(this.get('modelType'))).get('id') ) debugger
+      // if ( this.get('modelType') == 'player') debugger
+      return model;
+    }
 
     var isTopmostComponent = this.get('isTopmostComponent'),
         parent = this.get('parent');
 
     if ( isTopmostComponent ) {
-      if ( parent ) { throw 'Invalid nested tetris component'; }
+      // if ( parent ) { throw 'Invalid topmost nested tetris component'; }
 
       var modelType = this.get('modelType'),
           component = this;
@@ -75,8 +85,10 @@ export default Ember.Component.extend({
 
       model.save().then(function(modelResponse) {
         component.set('model', modelResponse);
-        component.notifyPropertyChange('model');
+        // component.notifyPropertyChange('model');
       });
+    } else {
+      throw 'Invalid deeply nested tetris component';
     }
 
     return;
@@ -85,23 +97,27 @@ export default Ember.Component.extend({
   grandChildren: Ember.computed('child', 'modelType', function() {
     var child = this.get('child'),
         associationName = this.getChildAssociationName();
-    if ( !( child && associationName ) ) { return; }
+    if ( !( child && associationName ) ) { console.log('aaaa');return; }
 
     var childType = this.get('modelType'),
         grandChildren = child.get(associationName);
 
-    if ( this.isSimpleResource(childType) ) { return grandChildren; }
-    if ( this.get('makingGrandChild') ) { return grandChildren; }
+    if ( this.isSimpleResource(childType) ) { console.log('bbbb');return grandChildren; }
+    if ( this.get('makingGrandChild') ) { console.log('cccc');return; }
 
     if ( grandChildren.isFulfilled ) {
       var madeGrandChild = this.get('madeGrandChild');
       if ( !madeGrandChild ) { this.set('needsGrandChild', true); }
+      console.log('grandchild - ' + associationName);
       return grandChildren;
     }
 
     var component = this;
-    grandChildren.then(function() {
-      component.notifyPropertyChange('child');
+    grandChildren.then(function(grandChildrenResponse) {
+      console.log('notify 1 - ' + associationName)
+      // component.set('grandChildren', grandChildrenResponse)
+      // component.notifyPropertyChange('grandChildren');
+      component.notifyPropertyChange('model');
     });
     return;
   }),
@@ -121,9 +137,16 @@ export default Ember.Component.extend({
     var component = this;
     if ( !child.save ) {
       child.then(function(resolvedChild) {
-        component.set('child', resolvedChild);
-        component.notifyPropertyChange('child');
-        component.notifyPropertyChange('needsGrandChild');
+        // if ( component.get('needsGrandChild') ) {
+        //   component.get('needsGrandChild')
+        // } else {
+
+        // };
+        // component.set('child', resolvedChild);
+        console.log('notify 2 - ' + component.getChildAssociationName())
+        // component.notifyPropertyChange('grandChildren');
+        // component.notifyPropertyChange('child');
+        // component.notifyPropertyChange('needsGrandChild');
       });
 
       return;
@@ -136,9 +159,15 @@ export default Ember.Component.extend({
     if ( this.get('makingGrandChild') ) { return; }
     this.set('makingGrandChild', true);
 
-    var grandChildAttributes = {};
-    grandChildAttributes[associationName] = child;
+    var grandChildAttributes = {},
+        modelType = this.get('modelType');
+
+    grandChildAttributes[modelType] = child;
     var grandChild = this.get('store').createRecord(`tetris/${grandChildModelType}`, grandChildAttributes);
+
+    console.log('*** ' + modelType + ": " + grandChild.get(modelType) + ' ***')
+
+    grandChild.set(modelType, child);
 
     if ( this.isSingularResource(grandChildModelType) ) {
       child.set(associationName, grandChild);
@@ -148,16 +177,43 @@ export default Ember.Component.extend({
       });
     }
 
-    grandChild.save().then(function() {
-      component.saveRelationships(0, function() {
+    console.log('creating - ' + grandChildModelType)
+    console.log('111')
+    grandChild.save().then(function(grandChildResponse) {
+      console.log('222 - ' + grandChildResponse)
+      grandChildResponse.recursiveSave(function() {
+        // debugger
+        if ( component.get('isDestroying') ) { console.log('wuh wuh');return; }
+        if ( component.get('isDestroyed') ) { console.log('bum bum');return; }
+
         component.setProperties({
           madeGrandChild: true,
           makingGrandChild: false,
           needsGrandChild: false
         });
 
-        component.notifyPropertyChange('child');
+        console.log('created - ' + grandChildModelType)
+        // debugger
+        console.log('notify 3')
+        // component.notifyPropertyChange('child');
+        component.notifyPropertyChange('model');
       });
+      // component.saveRelationships(0, function() {
+      //   debugger
+      //   if ( component.get('isDestroying') ) { console.log('wuh wuh');return; }
+      //   if ( component.get('isDestroyed') ) { console.log('bum bum');return; }
+
+      //   component.setProperties({
+      //     madeGrandChild: true,
+      //     makingGrandChild: false,
+      //     needsGrandChild: false
+      //   });
+
+      //   console.log('created - ' + grandChildModelType)
+      //   debugger
+      //   console.log('notify 3')
+      //   component.notifyPropertyChange('child');
+      // });
     });
 
   }),
@@ -174,8 +230,11 @@ export default Ember.Component.extend({
       ancestor = this.getAncestor(ancestorClass, parent, modelType);
     }
 
+    ancestor.recursiveSave(callback);
+    return;
+
     if ( !ancestor ) {
-      callback();
+      if ( callback ) { callback(); }
       return;
     }
 

@@ -6,7 +6,7 @@ import Ember from 'ember';
 const { assert, isEmpty } = Ember;
 
 if (config.environment === 'development') {
-  PouchDB.debug.enable('*');
+  // PouchDB.debug.enable('*');
 }
 
 function createDb() {
@@ -16,14 +16,14 @@ function createDb() {
 
   let db = new PouchDB(localDb);
 
-  // if (config.emberPouch.remoteDb) {
-  //   let remoteDb = new PouchDB(config.emberPouch.remoteDb);
+  if (config.emberPouch.remoteDb) {
+    let remoteDb = new PouchDB(config.emberPouch.remoteDb);
 
-  //   db.sync(remoteDb, {
-  //     live: true,
-  //     retry: true
-  //   });
-  // }
+    db.sync(remoteDb, {
+      live: true,
+      retry: true
+    });
+  }
 
   return db;
 }

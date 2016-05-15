@@ -3,6 +3,7 @@
 import TetrisModel from '../tetris-model';
 
 export default TetrisModel.extend({
+  parent: Ember.computed.alias('board'),
   board: DS.belongsTo('tetris/board'),
   pieces: DS.hasMany('tetris/piece'),
   numRows: DS.attr('number', {defaultValue: 20}),

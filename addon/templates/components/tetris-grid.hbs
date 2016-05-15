@@ -4,10 +4,10 @@
   </div>
 </div>
 
-{{#if child.id}}
+{{#if (and child.id child.save)}}
   {{#unless makingGrandChild}}
     {{#each grandChildren as |grandChild|}}
-      {{#if grandChild.id}}
+      {{#if (and grandChild.id grandChild.save)}}
         {{tetris-piece parent=child isTopmostComponent=false model=grandChild}}
       {{/if}}
     {{/each}}

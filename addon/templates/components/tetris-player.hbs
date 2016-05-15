@@ -1,7 +1,11 @@
-{{#if child.id}}
-  {{#unless makingGrandChild}}
-    {{#if onlyGrandChild.id}}
+111
+{{#if (and child.id child.save)}}
+333
+  <!-- {{#unless makingGrandChild}}
+    321
+    {{#if (and onlyGrandChild.id onlyGrandChild.save)}}
+      123
       {{tetris-board parent=child isTopmostComponent=false model=onlyGrandChild}}
     {{/if}}
-  {{/unless}}
+  {{/unless}} -->
 {{/if}}
